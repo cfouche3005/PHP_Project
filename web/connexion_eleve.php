@@ -10,46 +10,70 @@
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-              <a class="navbar-brand" >Connexion :</a>
               <div class="collapse navbar-collapse" id="navbarNav">
                   <ul class="navbar-nav">
-                    <li class="nav-item active">
-                      <a class="nav-link" href="connexion_eleve.php">Elève</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="accueil.html">Accueil</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="connexion_prof.php">Professeur</a>
+                        <a class="nav-link" href="connexion_eleve.php">Elève</a>
                     </li>
                     <li class="nav-item">
-                      <a class="nav-link" href="connexion_admin.php">Administration</a>
+                        <a class="nav-link" href="connexion_prof.php">Professeur</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="connexion_admin.php">Administration</a>
                     </li>
                   </ul>
               </div>
         </nav>
+        <br>
+        <h2>Connexion élève : </h2>
     </header>
 
-        <div class="box" id="box1">
-        </div>
+    <?php
+        require('../lib/fonction.php');  
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+        $db = dbConnect();
+    ?>
 
-        <div class="box" id="box2">
-            <form>
-                <!-- Email input -->
-                <div class="form">
-                    <p>Adresse email :</p>
-                    <input type="email" class="taille_form" id="email" name="email" class="form-control" />
-                </div>
+    <div class="box" id="box1">
+    </div>
 
-                <!-- Password input -->
-                <div class="form">
-                    <p>Mot de passe :</p>
-                    <input type="password" class="taille_form" id="pw" name="pw" class="form-control" />
-                </div>
-                <!-- Submit button -->
-                <button type="submit">Se connecter</button>
-            </form>
-        </div>
+    <div class="box" id="box2">
+        <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
+            <p> Mail : </p>
+            <input type="text" name="mail"/>
+            <br>
+            <p> Mot de passe : </p>
+            <input type="password" name="mp"/>
+            <br>
+            <input type="submit" value="Se connecter"/>
+        </form>
+    </div>
 
-        <div class="box" id="box3">
-        </div>
+    <div class="box" id="box3">
+    </div>
+
+    <?php
+        //Récupération connexion
+        if(!empty($_POST['mail']) && !empty($_POST['mp'])){
+
+            $mail = ($_POST["mail"]);
+            $mp_n_crypt = ($_POST["mp"]);
+            //$mp_crypt = password_hash($mp_n_crypt,PASSWORD_BCRYPT);       pr test crype le mp
+            
+            if(dbCheckMailMp($db,$mail,$mp_n_crypt)){
+                echo '<meta http-equiv="refresh" content="0;url=eleve_notes.php">';
+            }
+            else{
+                echo 'Erreur de connexion';
+            }
+        }
+
+    ?>
+
     </div>
 </body>
 
