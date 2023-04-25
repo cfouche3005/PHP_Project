@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "database-1.cqs8xapunqx7.eu-west-3.rds.amazonaws.com",
+            "port": 8080,
+            "driver": "PostgreSQL",
+            "username": "postgres",
+            "database": "db-test",
+            "password": "L2hGFHdnoZap",
+            "name": "projet"
+        }
+    ]
+}
