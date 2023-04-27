@@ -64,14 +64,14 @@
             $mp_n_crypt = ($_POST["mp"]);
             //$mp_crypt = password_hash($mp_n_crypt,PASSWORD_BCRYPT);       pr test crype le mp
             
-            if(dbCheckMailMp($db,$mail,$mp_n_crypt)){
+            if(dbCheckMailMpEleve($db,$mail,$mp_n_crypt)){
+                //Envoie vers la page eleve
                 echo '<meta http-equiv="refresh" content="0;url=eleve_notes.php">';
             }
             else{
                 echo 'Erreur de connexion';
             }
         }
-
     ?>
 
     </div>

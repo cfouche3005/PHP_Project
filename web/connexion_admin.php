@@ -32,10 +32,10 @@
     </header>
 
     <?php
-        /*require('?.php');
+        require('../lib/fonction.php');  
         ini_set('display_errors', 1);
         error_reporting(E_ALL);
-        $db = dbConnect();*/
+        $db = dbConnect();
     ?>
 
     <div class="box" id="box1">
@@ -47,7 +47,7 @@
             <input type="text" name="mail"/>
             <br>
             <p> Mot de passe : </p>
-            <input type="text" name="mp"/>
+            <input type="password" name="mp"/>
             <br>
             <input type="submit" value="Se connecter"/>
         </form>
@@ -55,6 +55,24 @@
 
     <div class="box" id="box3">
     </div>
+
+    <?php
+        //Récupération connexion
+        if(!empty($_POST['mail']) && !empty($_POST['mp'])){
+
+            $mail = ($_POST["mail"]);
+            $mp_n_crypt = ($_POST["mp"]);
+            
+            if(dbCheckMailMpAdmin($db,$mail,$mp_n_crypt)){
+                //Envoie vers la page admin choix
+                echo '<meta http-equiv="refresh" content="0;url=admin_choix.html">';
+            }
+            else{
+                echo 'Erreur de connexion';
+            }
+        }
+    ?>
+
 </div>
 
 </body>

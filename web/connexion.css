@@ -6,7 +6,7 @@ h2{
     margin-left: 5%;
 }
 
-p, input, button{
+p, input, button, a{
     margin:10px;  
 }
 
@@ -36,6 +36,7 @@ header{
     margin-left: 5%;
 }
 
+/*id pour les pages de connexions*/
 #box1{
     grid-row-start: 2;
     grid-row-end: 3;
@@ -57,6 +58,31 @@ header{
     grid-column-end: 4;
 }
 
+/*id pour la page admin choix*/
+#box1b{
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 1;
+    grid-column-end: 2;
+    border: 1px solid;
+    margin: 30px;
+}
+#box2b{
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    border: 1px solid;
+    margin: 30px;
+}
+#box3b{
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 3;
+    grid-column-end: 4;
+    border: 1px solid;
+    margin: 30px;
+}
 
 footer{
     grid-row-start: 3;
