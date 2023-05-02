@@ -170,4 +170,56 @@
             }
         }
     }
+
+    function redirect($url, $statusCode = 303){
+    header('Location: ' . $url, true, $statusCode);
+    die();
+    }
+
+    //Get sessions and permissions
+    function dbGetSessionID($pdo){
+        $request = 'SELECT sessions_ID from connexions where sessions_ID = :sessions_ID'; 
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':sessions_ID',$_SESSION['sessions_ID']);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function checkSessionID($pdo){
+        $session = dbGetSessionID($pdo);
+        if($session['sessions_ID'] == false || $session['sessions_ID'] == null || $session['sessions_ID'] != $_COOKIE['PHPSESSID']){
+            redirect('../../unauthorized.php',401);
+        }
+        else{
+            checkPermission($pdo);
+        }
+            
+    }
+
+    function dbGetPermission($pdo){
+        $request = 'SELECT sessions_PERM from connexions where sessions_ID = :sessions_ID'; 
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':sessions_ID',$_SESSION['sessions_ID']);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_ASSOC);
+    }
+
+    function checkPermission($pdo){
+        $permission = dbGetPermission($pdo);
+        if($permission['sessions_PERM'] != $_SESSION['sessions_PERM']){
+            redirect('../../forbidden.php',403);
+        }            
+    }
+
+    function dbCreateSessions($pdo,$perm){
+        $_SESSION['sessions_ID'] = $_COOKIE['PHPSESSID'];
+        $_SESSION['sessions_PERM'] = $perm;
+        $request = 'INSERT INTO connexions (sessions_ID,sessions_PERM) VALUES (:sessions_ID,:sessions_PERM)';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':sessions_ID',$_COOKIE['PHPSESSID']);
+        $statement->bindParam(':sessions_PERM',$perm);
+        $statement->execute();
+    }
+
+
 ?>
