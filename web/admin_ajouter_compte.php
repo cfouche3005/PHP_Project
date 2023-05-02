@@ -21,7 +21,7 @@
             </div>
       </nav>
         <br>
-        <h2>Formulaire de création de compte :</h2>
+        <h2 style="text-align: center; padding-top: 5px;">Formulaire de création de compte :</h2>
     </header>
     
     <?php
