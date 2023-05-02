@@ -22,11 +22,13 @@ body {
 }
 
 #layout {
-    margin-left: 1%;
-    margin-right: 5%;
     display: grid;
     grid-template-rows: 150px 250px 50px;
     grid-template-columns: 50% 50%;
+}
+
+nav.navbar.navbar-expand-lg.navbar-light.bg-light{
+    padding: 0px;
 }
 
 header{

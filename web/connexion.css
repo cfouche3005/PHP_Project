@@ -16,8 +16,6 @@ body {
 }
 
 #layout {
-    /*margin-left: 1%;    
-    margin-right: 5%;*/
     display: grid;
     grid-template-rows: 240px 250px 50px;
     grid-template-columns: 1fr 1fr 1fr;
