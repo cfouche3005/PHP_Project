@@ -18,10 +18,13 @@
                       <a class="nav-link" href="accueil.html">Déconnexion</a>
                   </li>
                 </ul>
+                <span class="navbar-text">
+                    NOM Prénom
+                </span>
             </div>
       </nav>
         <br>
-        <h2 style="text-align: center; padding-top: 5px;">Formulaire de création de compte :</h2>
+        <h2 style="text-align: center; padding-top: 30px;">Formulaire de création de compte :</h2>
     </header>
     
     <?php

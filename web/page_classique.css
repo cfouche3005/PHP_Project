@@ -45,6 +45,7 @@ header{
 }
 
 #box1{
+    padding-top: 70px;
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 1;
@@ -52,6 +53,7 @@ header{
 }
 
 #box2{
+    padding-top: 70px;
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 2;
