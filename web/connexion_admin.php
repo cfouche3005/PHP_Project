@@ -28,14 +28,14 @@
               </div>
         </nav>
         <br>
-        <h2> Connexion administrateur :</h2>
+        <h2 style="text-align: center; padding-top: 25px;"> Connexion administrateur :</h2>
     </header>
 
     <?php
-        require('../lib/fonction.php');  
-        ini_set('display_errors', 1);
-        error_reporting(E_ALL);
-        $db = dbConnect();
+        //require('../lib/fonction.php');  
+        //ini_set('display_errors', 1);
+        //error_reporting(E_ALL);
+        //$db = dbConnect();
     ?>
 
     <div class="box" id="box1">
