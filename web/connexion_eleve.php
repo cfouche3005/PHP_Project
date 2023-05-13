@@ -57,6 +57,7 @@
     </div>
 
     <?php
+        session_start();
         //Récupération connexion
         if(!empty($_POST['mail']) && !empty($_POST['mp'])){
 
@@ -65,6 +66,8 @@
             //$mp_crypt = password_hash($mp_n_crypt,PASSWORD_BCRYPT);       pr test crype le mp
             
             if(dbCheckMailMpEleve($db,$mail,$mp_n_crypt)){
+                $id_eleve = dbGetIdEleveByEmail($db,$mail);
+                $_SESSION['id_eleve'] = $id_eleve;
                 //Envoie vers la page eleve
                 echo '<meta http-equiv="refresh" content="0;url=eleve_notes.php">';
             }

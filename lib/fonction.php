@@ -17,31 +17,44 @@
         return $conn;
     }
 
-//Récupération email
+//Récupération eleve 
     //Recuperer Mail eleve
     function dbGetMailEleve($pdo){
         $mails = $pdo->query('SELECT eleve_email FROM  eleve');
         $result = $mails->fetchALL(PDO::FETCH_ASSOC);
         return $result;
     }
-    //Recuperer Mail prof
-    function dbGetMailProf($pdo){
-        $mails = $pdo->query('SELECT prof_email FROM prof');
-        $result = $mails->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
-    //Recuperer Mail admin
-    function dbGetMailAdmin($pdo){
-        $mails = $pdo->query('SELECT admin_email FROM admin');
-        $result = $mails->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
-
-//Récupération mot passe
     //Recuperer MP eleve
     function dbGetMpEleve($pdo){
         $mps = $pdo->query('SELECT eleve_password from eleve');
         $result = $mps->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup id eleve by email
+    function dbGetIdEleveByEmail($pdo,$email){
+        $request = 'SELECT eleve_id FROM eleve WHERE eleve_email=:email';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':email',$email);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup nom prénom eleve by id
+    function dbGetNameSurnameEleveById($pdo,$id_eleve){
+        $request = 'SELECT eleve_name, eleve_surname FROM eleve WHERE eleve_id=:id_eleve';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_eleve',$id_eleve['eleve_id']);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+//Récupération prof
+    //Recuperer Mail prof
+    function dbGetMailProf($pdo){
+        $mails = $pdo->query('SELECT prof_email FROM prof');
+        $result = $mails->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
     //Recuperer MP prof
@@ -50,12 +63,56 @@
         $result = $mps->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    function dbGetIdProfByEmail($pdo,$email){
+        $request = 'SELECT prof_id FROM prof WHERE prof_email=:email';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':email',$email);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup nom prénom prof by id
+    function dbGetNameSurnameProfById($pdo,$id_prof){
+        $request = 'SELECT prof_name, prof_surname FROM prof WHERE prof_id=:id_prof';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_prof',$id_prof['prof_id']);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    
+
+//Récupération admin
     //Recuperer MP admin
     function dbGetMpAdmin($pdo){
         //$mps = $pdo->query('SELECT '/*mp*/' from '/*table connexion admin*/ );
         $result = $mps->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    //Recuperer Mail admin
+    function dbGetMailAdmin($pdo){
+        $mails = $pdo->query('SELECT admin_email FROM admin');
+        $result = $mails->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbGetIdAdminByEmail($pdo,$email){
+        $request = 'SELECT admin_id FROM admin WHERE admin_email=:email';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':email',$email);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup nom prénom admin by id
+    function dbGetNameSurnameAdminById($pdo,$id_admin){
+        $request = 'SELECT admin_name, admin_surname FROM admin WHERE admin_id=:id_admin';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_admin',$id_admin['admin_id']);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 //Matières
     function dbGetMatiere($pdo){

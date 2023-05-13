@@ -9,6 +9,13 @@
 
 <body>
 <div id="layout">
+        
+    <?php
+        require('../lib/fonction.php');  
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+        $db = dbConnect();
+    ?>
 
     <header>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -34,21 +41,25 @@
                     </li>
                 </ul>
                 <span class="navbar-text">
-                    NOM Prénom
+                    Connecté sous :
+                </span>
+                <span class="navbar-text">
+                    <?php
+                        session_start();
+                        $id_admin = $_SESSION['id_admin'];
+                        $admin_infos = dbGetNameSurnameAdminById($db,$id_admin);
+                        $admin_nom = $admin_infos['admin_name'];
+                        echo $admin_nom;
+                        echo "<br>";
+                        $admin_prenom = $admin_infos['admin_surname'];
+                        echo $admin_prenom;
+                    ?>
                 </span>
             </div>
         </nav>
         <br>
         <h2 style="text-align: center; padding-top: 5px;">Formulaire de création de DS :</h2>
     </header>
-    
-    <?php
-        require('../lib/fonction.php');  
-        ini_set('display_errors', 1);
-        error_reporting(E_ALL);
-        $db = dbConnect();
-    ?>
-
 
     <div class="box" id="box1">
         <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
@@ -109,7 +120,6 @@
             $classe = $_POST['classe'];
             $num_ds = $_POST['num_ds'];                
             $matiere = $_POST["matiere"];
-            //$matiere = 'Physique';
             $semestre = $_POST["semestre"];
             $date = $_POST["date"];
             $heure = $_POST["heure"];

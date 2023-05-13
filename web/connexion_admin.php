@@ -57,6 +57,7 @@
     </div>
 
     <?php
+        session_start();
         //Récupération connexion
         if(!empty($_POST['mail']) && !empty($_POST['mp'])){
 
@@ -64,6 +65,8 @@
             $mp_n_crypt = ($_POST["mp"]);
             
             if(dbCheckMailMpAdmin($db,$mail,$mp_n_crypt)){
+                $id_admin = dbGetIdAdminByEmail($db,$mail);
+                $_SESSION['id_admin'] = $id_admin;
                 //Envoie vers la page admin choix
                 echo '<meta http-equiv="refresh" content="0;url=admin_choix.html">';
             }
