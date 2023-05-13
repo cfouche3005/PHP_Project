@@ -6,6 +6,10 @@ p, button,a {
     margin:10px;  
 }
 
+h2{
+    margin-left: 3%;
+}
+
 #case{
     width: 400px;
     height: 30px;
@@ -18,15 +22,11 @@ body {
 }
 
 #layout {
-    display: grid;
     margin-left: 1%;
     margin-right: 5%;
-    grid-template-rows: 150px 250px 50px;
+    display: grid;
+    grid-template-rows: 150px 600px 50px;
     grid-template-columns: 50% 50%;
-}
-
-nav.navbar.navbar-expand-lg.navbar-light.bg-light{
-    padding: 0px;
 }
 
 header{
@@ -47,7 +47,6 @@ header{
 }
 
 #box1{
-    padding-top: 70px;
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 1;
@@ -55,7 +54,6 @@ header{
 }
 
 #box2{
-    padding-top: 70px;
     grid-row-start: 2;
     grid-row-end: 3;
     grid-column-start: 2;
@@ -68,9 +66,4 @@ footer{
     grid-column-start: 1;
     grid-column-end: 3;
     text-align: center;
-}
-
-#tableau{
-    margin-left: 10px;  
-
 }

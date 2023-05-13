@@ -28,14 +28,14 @@
                 </div>
         </nav>
         <br>
-        <h2 style="text-align: center; padding-top: 25px;">Connexion professeur : </h2>
+        <h2 style="text-align: center;">Connexion professeur : </h2>
     </header>
 
     <?php
-        //require('../lib/fonction.php');  
-        //ini_set('display_errors', 1);
-        //error_reporting(E_ALL);
-        //$db = dbConnect();
+        require('../lib/fonction.php');  
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+        $db = dbConnect();
     ?>
 
     <div class="box" id="box1">
@@ -49,7 +49,7 @@
             <p> Mot de passe : </p>
             <input type="password" name="mp"/>
             <br>
-            <input type="submit" value="Se connecter"/>
+            <input class="btn btn-secondary" type="submit" value="Se connecter"/>
         </form>
     </div>
 

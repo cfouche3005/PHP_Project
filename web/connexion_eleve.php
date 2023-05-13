@@ -28,14 +28,14 @@
               </div>
         </nav>
         <br>
-        <h2 style="text-align: center; padding-top: 25px;">Connexion élève : </h2>
+        <h2 style="text-align: center; ">Connexion élève : </h2>
     </header>
 
     <?php
-        //require('../lib/fonction.php');  
-        //ini_set('display_errors', 1);
-        //error_reporting(E_ALL);
-        //$db = dbConnect();
+        require('../lib/fonction.php');  
+        ini_set('display_errors', 1);
+        error_reporting(E_ALL);
+        $db = dbConnect();
     ?>
 
     <div class="box" id="box1">
@@ -49,7 +49,7 @@
             <p> Mot de passe : </p>
             <input type="password" name="mp"/>
             <br>
-            <input type="submit" value="Se connecter"/>
+            <input class="btn btn-secondary" type="submit" value="Se connecter"/>
         </form>
     </div>
 
@@ -57,6 +57,7 @@
     </div>
 
     <?php
+        session_start();
         //Récupération connexion
         if(!empty($_POST['mail']) && !empty($_POST['mp'])){
 
@@ -65,6 +66,8 @@
             //$mp_crypt = password_hash($mp_n_crypt,PASSWORD_BCRYPT);       pr test crype le mp
             
             if(dbCheckMailMpEleve($db,$mail,$mp_n_crypt)){
+                $id_eleve = dbGetIdEleveByEmail($db,$mail);
+                $_SESSION['id_eleve'] = $id_eleve;
                 //Envoie vers la page eleve
                 echo '<meta http-equiv="refresh" content="0;url=eleve_notes.php">';
             }
