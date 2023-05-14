@@ -28,7 +28,7 @@
                         <a class="nav-link" href="admin_ajouter_ds.php">Ajouter DS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, promo, classe, semestre, matière</a>
+                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, classe, semestre, matière</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin_modifier_suppr_compte.php">Modifier / Supprimer un compte</a>
@@ -101,10 +101,9 @@
             </select>
             <br>
             <input id="case" type="time" min="08:00" max="18:00" name="heure"/>
-
+            <br>            
             <input class="btn btn-secondary" type="submit" value="Enregistrer le DS"/>
             <br>
-            <a class="btn btn-secondary" href="admin_modifier_suppr_ds.php" role="button">Voir les DS existants</a>
 
         </form>
     </div>
