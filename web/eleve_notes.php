@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<div id="layout">
+<div>
     <?php
         require('../lib/fonction.php');  
         ini_set('display_errors', 1);
@@ -46,6 +46,7 @@
 
     <div>
         <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
+            Quel semestre ?    
             <select id="case" name="semestre">
                 <?php
                     $semestres = dbGetSemestre($db);
@@ -57,13 +58,73 @@
             <input class="btn btn-secondary" type="submit" name="rechercher" value="Rechercher"/>
         
         <?php
-            echo $id_eleve['eleve_id'];
-            echo "<br>";
-            
-        ?>
+            if(isset($_POST['rechercher']) && isset($_POST['semestre'])){
+                $semestre = $_POST['semestre'];
+                $classe = dbGetClasseEleveById($db,$id_eleve['eleve_id']);
+                $annee_uni = dbGetAnneUniByClasse($db,$classe['classe']);
+                $semestre_id = dbGetIdSemestreBySemetre($db,$semestre,$annee_uni['annee_uni']);
+                $listeMatieres = dbGetMatiereByClasseSemestre($db,$classe['classe'],$semestre_id['semestre_id']);
+                $nbrNotesTotal = 0;
+                foreach($listeMatieres as $key => $values){
+                    $nbrNotes = dbCountNoteByEleveMatSem($db,$id_eleve['eleve_id'],$values['matiere'],$semestre,$classe['classe']);
+                    $nbrNotesTotal += $nbrNotes['count'];
+                }
+                
+                if($nbrNotesTotal != 0){
+                    $moyGenerale = dbGetMoyGenerale($db,$id_eleve['eleve_id'],$semestre,$nbrNotesTotal,$listeMatieres,$classe['classe']);
+                    $nbrEleves = dbCountEleveByClasse($db, $classe['classe']);
+                    $rangGeneral = dbGetRangGeneral($db,$id_eleve['eleve_id'],$classe['classe'],$semestre,$nbrNotes['count'],$moyGenerale,$listeMatieres);
 
-        
-        
+                    echo "<table style='text-align: center' class='table table-striped table-bordered'>";
+                    echo "<br>";
+                    echo "<thead> <tr> <th>Moyenne générale éleve</th><th>Rang général</th></tr> </thead>";
+                    echo "<tbody>";
+                    echo "<tr> <td>".round($moyGenerale,1)."</td><td>".$rangGeneral."/".$nbrEleves['count']."</td> </tr>";
+                    echo "</tbody>";
+                    echo "</table>";
+                    echo "<br>";
+    
+                    foreach($listeMatieres as $key => $values){
+                        $listeIdDs = dbGetIdDsByClasseSemestreMatiere($db,$classe['classe'],$semestre,$values['matiere']);
+                        $nbrNotes = dbCountNoteByEleveMatSem($db,$id_eleve['eleve_id'],$values['matiere'],$semestre,$classe['classe']);
+                        $moy = dbCalculerMoyMatiere($db,$id_eleve['eleve_id'],$values['matiere'],$semestre,$nbrNotes['count'],$classe['classe']);
+                        $nbrEleves = dbCountEleveByClasse($db, $classe['classe']);
+                        $moyClasse = dbCalculerMoyenneClasse($db,$classe['classe'],$values['matiere'],$semestre,$nbrNotes['count'],$nbrEleves['count']);
+                        if($moy < 10){
+                            $rattrapage = 'OUI';
+                        }
+                        else{
+                            $rattrapage = 'NON';
+                        }
+                        $rang = dbGetRang($db,$classe['classe'],$values['matiere'],$semestre,$nbrNotes['count'],round($moy,1));
+                        $appreciation = dbGetAppreciation($db,$semestre,$values['matiere'],$id_eleve['eleve_id'],$classe['classe']);
+
+                        echo "<table style='text-align: center' class='table table-striped table-bordered'>";
+                        echo "<br>";
+                        echo "<h4> ".$values['matiere']." :</h4>";
+                        echo "<thead> <tr> <th>Libellé</th><th>Note</th><th>Moyenne éleve</th><th>Moyenne classe</th><th>Rang</th><th>Rattrapage</th><th>Appréciation</th> </tr> </thead>";
+                        echo "<tbody>";
+                        echo "<tr> <td></td><td></td><td>".round($moy,1)."</td><td>".round($moyClasse,1)."</td><td>".$rang."/".$nbrEleves['count']."</td><td>".$rattrapage."</td><td>".$appreciation['appreciation']."</td> </tr>";
+    
+                        foreach($listeIdDs as $cle => $valIdDs){
+                            $infosDsEleve = dbGetInfoNotesEleve($db,$valIdDs['ds_id'],$classe['classe'],$semestre,$values['matiere'],$id_eleve['eleve_id']);
+    
+                            foreach($infosDsEleve as $cle =>$valDs){
+                                 
+                                echo "<tr> 
+                                <td>".$valDs['name']."</td><td>".$valDs['note']."</td><td></td><td></td><td></td><td></td><td></td>
+                                </tr>";
+                            }
+                        }
+                        echo "</tbody>";
+                        echo "</table>";
+                    }
+                }
+                else{
+                    echo "<h4 style='text-align:center'>Vous n'avez pas de notes pour ce semestre !</h4>";
+                }
+            }
+        ?>
         </form>
     </div>
 

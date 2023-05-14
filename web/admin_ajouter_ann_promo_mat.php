@@ -28,7 +28,7 @@
                         <a class="nav-link" href="admin_ajouter_ds.php">Ajouter DS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, promo, classe, semestre, matière</a>
+                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, classe, semestre, matière</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin_modifier_suppr_compte.php">Modifier / Supprimer un compte</a>
@@ -58,17 +58,15 @@
             </div>
         </nav>
         <br>
-        <h3 style="text-align: center; padding-top: 5px;">Ajouter une année-universitaire, une promo, une classe, un semestre ou une matière :</h3>
+        <h3 style="text-align: center; padding-top: 5px;">Ajouter une année-universitaire, une classe, un semestre ou une matière :</h3>
     </header>
 
     <div class="box" id="box1">
 
-        <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
-            <p>Ajouter une promo :</p>
-            <input id="case" type="text" placeholder="(2020-2026)" name="promo"/>
-            <br>
-            <p>Ajouter une année universitaire :</p>
-            <input id="case" type="text" placeholder="(2020-2021)" name="annee_uni"/>
+        <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post"> 
+            <p>Pour ajouter un semestre ou une classe précisez l'année universitaire</p>
+            <p>Ajouter un semestre :</p>
+            <input id="case" type="text" placeholder="(S1)" name="semestre"/>
             <br>
             <p>Ajouter une classe :</p>
             <input id="case" type="text" placeholder="(CIR1)" name="classe"/>
@@ -76,8 +74,9 @@
     </div>
 
     <div class="box" id="box2">
-            <p>Ajouter un semestre :</p>
-            <input id="case" type="text" placeholder="(S1)" name="semestre"/>
+            
+            <p>Ajouter une année universitaire :</p>
+            <input id="case" type="text" placeholder="(2020-2021)" name="annee_uni"/>
             <br>
             <p>Ajouter une matière :</p>
             <input id="case" type="text" placeholder="(Mathématiques)" name="matiere"/>
@@ -88,22 +87,6 @@
     </div>
 
         <?php
-            if(!empty($_POST['promo'])){
-                $promo = $_POST['promo'];
-                $dbpromos = dbGetPromo($db);
-                $var = true;
-                foreach($dbpromos as $key => $values){
-                    if($promo == $values['promo']){
-                        $var = false;
-                    }
-                }
-                if($var != false){
-                    dbInsertPromo($db,$promo);
-                }
-                else{
-                    echo "La promo existe déjà !";
-                }
-            }
 
             if(!empty($_POST['annee_uni'])){
                 $annee_uni = $_POST['annee_uni'];
@@ -122,8 +105,9 @@
                 }
             }
 
-            if(!empty($_POST['classe'])){
+            if(!empty($_POST['classe']) && !empty($_POST['annee_uni'])){
                 $classe = $_POST['classe'];
+                $annee_uni = $_POST['annee_uni'];
                 $dbclasses = dbGetClasse($db);
                 $var = true;
                 foreach($dbclasses as $key => $values){
@@ -132,16 +116,29 @@
                     }
                 }
                 if($var != false){
-                    dbInsertClasse($db,$classe);
+                    dbInsertClasse($db,$classe,$annee_uni);
                 }
                 else{
                     echo "La classe existe déjà !";
                 }
             }
 
-            if(!empty($_POST['semestre'])){
+            if(!empty($_POST['semestre']) && !empty($_POST['annee_uni'])){
                 $semestre = $_POST['semestre'];
-
+                $annee_uni = $_POST['annee_uni'];
+                $dbSemestres = dbGetSemestre($db);
+                $var = true;
+                foreach($dbSemestres as $key =>$values){
+                    if($semestre == $values['semestre']){
+                        $var = false;
+                    }
+                }
+                if($var != false){
+                    dbInsertSemestre($db,$semestre,$annee_uni);
+                }
+                else{
+                    echo "Le semestre existe déjà !";
+                }
             }
 
             if(!empty($_POST['matiere'])){

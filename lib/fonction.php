@@ -48,6 +48,26 @@
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
+    //Recup classe eleve by id
+    function dbGetClasseEleveById($pdo,$id_eleve){
+        $request = 'SELECT classe_id FROM eleve WHERE eleve_id=:id_eleve';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_eleve',$id_eleve);
+        $statement->execute();
+        $id_classe = $statement->fetch(PDO::FETCH_ASSOC);
+        $result = dbGetClasseByIdClasse($pdo,$id_classe['classe_id']);
+        return $result;
+    }
+    //Recup id_eleve by classe
+    function dbGetIdEleveByClasse($pdo,$classe){
+        $idClasse = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'SELECT eleve_id FROM eleve WHERE classe_id=:id_classe';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_classe',$idClasse['classe_id']);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 
 //Récupération prof
@@ -63,10 +83,20 @@
         $result = $mps->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    //Recup id prod by email
     function dbGetIdProfByEmail($pdo,$email){
         $request = 'SELECT prof_id FROM prof WHERE prof_email=:email';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':email',$email);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup id prof selon la matiere
+    function dbGetIdProfByMatiere($pdo,$matiere){
+        $request = 'SELECT prof_id FROM prof WHERE matiere=:matiere';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':matiere',$matiere);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -132,9 +162,24 @@
         $result = $classes->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-    function dbInsertClasse($pdo,$classe){
-        $statement = $pdo->prepare('INSERT INTO classe (classe) VALUES (:classe)');
+    function dbGetIdClasseByClasse($pdo,$classe){
+        $statement = $pdo->prepare('SELECT classe_id FROM classe WHERE classe=:classe');
         $statement->bindParam(':classe',$classe);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbGetClasseByIdClasse($pdo,$id_classe){
+        $statement = $pdo->prepare('SELECT classe FROM classe WHERE classe_id=:id_classe');
+        $statement->bindParam(':id_classe',$id_classe);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbInsertClasse($pdo,$classe,$annee_uni){
+        $statement = $pdo->prepare('INSERT INTO classe (classe_id,classe,annee_uni) VALUES (DEFAULT,:classe,:annee_uni)');
+        $statement->bindParam(':classe',$classe);
+        $statement->bindParam(':annee_uni',$annee_uni);
         $statement->execute();
     }
 
@@ -144,34 +189,60 @@
         $result = $annees->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    function dbGetAnneUniByClasse($pdo,$classe){
+        $statement = $pdo->prepare('SELECT annee_uni FROM classe WHERE classe=:classe');
+        $statement->bindParam(':classe',$classe);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
     function dbInsertAnneeUni($pdo,$annee_uni){
         $statement = $pdo->prepare('INSERT INTO annee_uni (annee_uni) VALUES (:annee_uni)');
         $statement->bindParam(':annee_uni',$annee_uni);
         $statement->execute();
     }
 
-//Promo
-    function dbGetPromo($pdo){
-        $promos = $pdo->query('SELECT promo from promo');
-        $result = $promos->fetchAll(PDO::FETCH_ASSOC);
-        return $result;
-    }
-    function dbInsertPromo($pdo,$promo){
-        $statement = $pdo->prepare('INSERT INTO promo (promo) VALUES (:promo)');
-        $statement->bindParam(':promo',$promo);
-        $statement->execute();
-    }
-
 //Semestre
     function dbGetSemestre($pdo){
-        $semestres = $pdo->query('SELECT semestre from semestre');
+        $semestres = $pdo->query('SELECT DISTINCT semestre from semestre ORDER BY semestre');
         $result = $semestres->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-    function dbInsertSemestre($pdo,$semestre){
-        $statement = $pdo->prepare('INSERT INTO semestre (semestre) VALUES (:semestre)');
-        $statement->bindParam(':semestre',$emestre);
+    function dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni){
+        $statement = $pdo->prepare('SELECT semestre_id FROM semestre WHERE semestre=:semestre AND annee_uni=:annee_uni');
+        $statement->bindParam(':semestre',$semestre);
+        $statement->bindParam(':annee_uni',$annee_uni);
         $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbGetSemestreByIdSemetre($pdo,$id_semestre){
+        $statement = $pdo->prepare('SELECT semestre FROM semestre WHERE semestre_id=:semestre_id');
+        $statement->bindParam(':semestre_id',$id_semestre);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbInsertSemestre($pdo,$semestre,$annee_uni){
+        $statement = $pdo->prepare('INSERT INTO semestre (semestre_id,semestre,annee_uni) VALUES (DEFAULT,:semestre,:annee_uni)');
+        $statement->bindParam(':semestre',$semestre);
+        $statement->bindParam(':annee_uni',$annee_uni);
+        $statement->execute();
+    }
+
+//Recup appréciation
+    function dbGetAppreciation($pdo,$semestre,$matiere,$eleve_id,$classe){
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        //return $semestre_id;
+        $request = 'SELECT DISTINCT appreciation FROM appreciation WHERE semestre_id=:semestre_id AND matiere=:matiere AND eleve_id=:eleve_id';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':eleve_id',$eleve_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
     }
 
 //Récupération nom prof
@@ -183,17 +254,25 @@
 
 //Récuperer une ligne de DS
     function dbGetDs($pdo){
-        $ds = $pdo->query('SELECT date, heure, name, matiere, semestre FROM ds');
-        $result = $ds->fetch(PDO::FETCH_ASSOC);
+        $statement = $pdo->prepare('SELECT d.date, d.heure, d.name, d.matiere, s.semestre FROM ds d, semestre s WHERE d.semestre_id=s.semestre_id');
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
 //Recuperer une ligne de compte eleve
-    function dbGetCompteEleve($pdo){
-        $ds = $pdo->query('SELECT eleve_name,eleve_surname,eleve_email,eleve_phone,classe,promo FROM eleve');
-        $result = $ds->fetch(PDO::FETCH_ASSOC);
+    function dbGetCompteEleve2($pdo){
+        $statement = $pdo->prepare('SELECT e.eleve_name, e.eleve_surname, e.eleve_email, e.eleve_phone, c.classe FROM eleve e, classe c WHERE c.classe_id=e.classe_id');
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
+    function dbGetCompteEleve($pdo){
+        $statement = $pdo->query('SELECT eleve_name, eleve_surname, eleve_email, eleve_phone FROM eleve');
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 //Récuperer une ligne de compte prof
     function dbGetCompteProf($pdo){
@@ -314,27 +393,21 @@
 
 
 //fonction ajouter DS ds bdd
-    function dbInsertDS($pdo,$class,$DSname,$matiere,$semester,$heure,$date){
+    function dbInsertDS($pdo,$class,$DSname,$matiere,$semestre,$heure,$date){
         $prof_id = dbGetIdProfByMatiere($pdo,$matiere);
-        $request = 'INSERT INTO ds (ds_id,date,heure,name,matiere,semestre,classe,prof_id) VALUES (DEFAULT,:date,:heure,:name,:matiere,:semestre,:classe,:prof_id)';
+        $annee_uni = dbGetAnneUniByClasse($pdo,$class);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        $classe_id = dbGetIdClasseByClasse($pdo,$class);
+        $request = 'INSERT INTO ds (ds_id,date,heure,name,matiere,semestre_id,classe_id,prof_id) VALUES (DEFAULT,:date,:heure,:name,:matiere,:semestre_id,:classe_id,:prof_id)';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':date',$date);
         $statement->bindParam(':heure',$heure);
         $statement->bindParam(':name',$DSname);
         $statement->bindParam(':matiere',$matiere);
-        $statement->bindParam(':semestre',$semester);
-        $statement->bindParam(':classe',$class);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
         $statement->bindParam(':prof_id',$prof_id['prof_id']);
         $statement->execute();
-    }
-
-    function dbGetIdProfByMatiere($pdo,$matiere){
-        $request = 'SELECT prof_id FROM prof WHERE matiere=:matiere';
-        $statement = $pdo->prepare($request);
-        $statement->bindParam(':matiere',$matiere);
-        $statement->execute();
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-        return $result;
     }
 
     //plus utile
@@ -353,16 +426,16 @@
 
 
 //fonction ajouter compte ds bdd 
-    function dbInsertCompteEleve($pdo,$nom,$prenom,$email,$tel,$mp_crypt,$classe,$promo){
-        $request = 'INSERT INTO eleve (eleve_id,eleve_name,eleve_surname,eleve_email,eleve_phone,eleve_password,classe,promo) VALUES (DEFAULT,:nom,:prenom,:email,:tel,:mp,:classe,:promo)';
+    function dbInsertCompteEleve($pdo,$nom,$prenom,$email,$tel,$mp_crypt,$classe){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'INSERT INTO eleve (eleve_id,eleve_name,eleve_surname,eleve_email,eleve_phone,eleve_password,classe_id) VALUES (DEFAULT,:nom,:prenom,:email,:tel,:mp,:classe_id)';
         $ajout = $pdo->prepare($request);
         $ajout->bindParam(':nom', $nom);
         $ajout->bindParam(':prenom', $prenom);
         $ajout->bindParam(':email', $email);
         $ajout->bindParam(':tel', $tel);
         $ajout->bindParam(':mp', $mp_crypt);
-        $ajout->bindParam(':classe', $classe);
-        $ajout->bindParam(':promo', $promo);
+        $ajout->bindParam(':classe_id', $classe_id['classe_id']);
         $ajout->execute();
     }
     function dbInsertCompteProf($pdo,$nom,$prenom,$email,$tel,$mp_crypt,$matiere){
@@ -380,9 +453,10 @@
 
 //Tableau avec chaque ds et ces informations selon la classe
     function dbGetDsInfo($pdo,$classe){
-        $request = 'SELECT d.ds_id, d.name, d.matiere, p.prof_name, d.semestre, d.date, d.heure FROM ds d, prof p WHERE d.prof_id=p.prof_id AND d.classe=:classe ORDER BY d.matiere, d.date';
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'SELECT d.ds_id, d.name, d.matiere, s.semestre, d.date, d.heure FROM ds d, semestre s WHERE d.semestre_id=s.semestre_id AND d.classe_id=:classe_id ORDER BY d.matiere, d.date';
         $statement = $pdo->prepare($request);
-        $statement->bindParam(':classe',$classe);
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -420,31 +494,28 @@
         $statement->execute();
     }
     function dbModifierDsMatiere($pdo,$matiere,$id_ds){
-        $request = 'UPDATE ds SET matiere=:new_val WHERE ds_id=:id_ds';
+        $prof_id = dbGetIdProfByMatiere($pdo,$matiere);
+        $request = 'UPDATE ds SET matiere=:matiere, prof_id=:prof_id WHERE ds_id=:id_ds';
         $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$matiere);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':prof_id',$prof_id['prof_id']);
         $statement->bindParam(':id_ds',$id_ds);
         $statement->execute();
     }
-    function dbModifierDsSemestre($pdo,$semestre,$id_ds){
-        $request = 'UPDATE ds SET semestre=:new_val WHERE ds_id=:id_ds';
+    function dbModifierDsSemestre($pdo,$semestre,$id_ds,$classe){
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo, $semestre,$annee_uni['annee_uni']);
+        $request = 'UPDATE ds SET semestre_id=:new_val WHERE ds_id=:id_ds';
         $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$semestre);
+        $statement->bindParam(':new_val',$semestre_id['semestre_id']);
         $statement->bindParam(':id_ds',$id_ds);
         $statement->execute();
     }
     function dbModifierDsClasse($pdo,$classe,$id_ds){
-        $request = 'UPDATE ds SET classe=:new_val WHERE ds_id=:id_ds';
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'UPDATE ds SET classe_id=:new_val WHERE ds_id=:id_ds';
         $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$classe);
-        $statement->bindParam(':id_ds',$id_ds);
-        $statement->execute();
-    }
-    function dbModifierDsIdProf($pdo,$prof_name,$id_ds){
-        $id_prof = dbGetIdProfByName($pdo,$prof_name);
-        $request = 'UPDATE ds SET prof_id=:new_val WHERE ds_id=:id_ds';
-        $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$id_prof);
+        $statement->bindParam(':new_val',$classe_id);
         $statement->bindParam(':id_ds',$id_ds);
         $statement->execute();
     }
@@ -452,7 +523,7 @@
 
 //Tableau avec chaque compte et ces informations selon le statut
     function dbGetCompteInfoEleve($pdo,$classe){
-        $request = 'SELECT eleve_id, eleve_name, eleve_surname, eleve_email, eleve_phone, classe, promo FROM eleve WHERE classe=:classe ORDER BY eleve_name';
+        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, e.eleve_phone, c.classe FROM eleve e, classe c WHERE c.classe=:classe AND e.classe_id=c.classe_id ORDER BY eleve_name';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':classe',$classe);
         $statement->execute();
@@ -496,16 +567,10 @@
         $statement->execute();
     }
     function dbModifierCompteEleveClasse($pdo,$classe,$id_compte){
-        $request = 'UPDATE eleve SET classe=:new_val WHERE eleve_id=:id_compte';
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'UPDATE eleve SET classe_id=:new_val WHERE eleve_id=:id_compte';
         $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$classe);
-        $statement->bindParam(':id_compte',$id_compte);
-        $statement->execute();
-    }
-    function dbModifierCompteElevePromo($pdo,$promo,$id_compte){
-        $request = 'UPDATE eleve SET promo=:new_val WHERE eleve_id=:id_compte';
-        $statement = $pdo->prepare($request); 
-        $statement->bindParam(':new_val',$promo);
+        $statement->bindParam(':new_val',$classe_id['classe_id']);
         $statement->bindParam(':id_compte',$id_compte);
         $statement->execute();
     }
@@ -562,6 +627,151 @@
         $statement = $pdo->prepare('DELETE from prof WHERE prof_id=:id_prof');
         $statement->bindParam(':id_prof',$id_compte_prof);
         $statement->execute();
+    }
+
+//Recup liste des matieres selon classe & semestre
+    function dbGetMatiereByClasseSemestre($pdo, $classe, $semestre_id){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $statement = $pdo->prepare('SELECT DISTINCT matiere FROM ds WHERE classe_id=:classe_id AND semestre_id=:semestre_id ORDER BY matiere');
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
+        $statement->bindParam(':semestre_id',$semestre_id);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+//Recup liste id_ds selon classe semestre matiere
+    function dbGetIdDsByClasseSemestreMatiere($pdo,$classe,$semestre,$matiere){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        $request = 'SELECT ds_id FROM ds WHERE classe_id=:classe_id AND semestre_id=:semestre_id AND matiere=:matiere ORDER BY date';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+//Recup info pour tableau notes eleves
+    function dbGetInfoNotesEleve($pdo,$id_ds,$classe,$semestre,$matiere,$id_eleve){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        $request = 'SELECT d.ds_id, d.name, n.note, n.coeff FROM ds d, notes n WHERE d.ds_id=:id_ds AND d.ds_id=n.ds_id AND d.classe_id=:classe_id AND d.semestre_id=:semestre_id AND d.matiere=:matiere AND n.eleve_id=:id_eleve';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_ds',$id_ds);
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':id_eleve',$id_eleve);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+//Nombre d'élève par classe
+    function dbCountEleveByClasse($pdo, $classe){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $statement = $pdo->prepare('SELECT COUNT(eleve_id) FROM eleve WHERE classe_id=:classe_id');
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;     //attention result tableau ['count']
+    }
+
+//Recup note coef par eleve matiere semestre
+    function dbGetNoteCoefByEleveMatSem($pdo,$id_eleve,$matiere,$semestre,$classe){
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        $request = 'SELECT n.note, n.coeff FROM notes n, ds d WHERE d.ds_id=n.ds_id AND d.semestre_id=:semestre_id AND d.matiere=:matiere AND n.eleve_id=:id_eleve';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':id_eleve',$id_eleve);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbCountNoteByEleveMatSem($pdo,$id_eleve,$matiere,$semestre,$classe){
+        $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
+        $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
+        $request = 'SELECT COUNT(n.note) FROM notes n, ds d WHERE d.ds_id=n.ds_id AND d.semestre_id=:semestre_id AND d.matiere=:matiere AND n.eleve_id=:id_eleve';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':id_eleve',$id_eleve);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+//Calculer moyenne eleve par matiere
+    function dbCalculerMoyMatiere($pdo,$id_eleve,$matiere,$semestre,$nbrNotes,$classe){
+        $listeNotesCoef = dbGetNoteCoefByEleveMatSem($pdo,$id_eleve,$matiere,$semestre,$classe);
+        $somme = 0;
+        $totalCoef = 0;
+        foreach($listeNotesCoef as $key =>$values){
+            $somme += $values['note']*$values['coeff'];
+            $totalCoef += $values['coeff'];
+        }
+        $moy = $somme / $totalCoef;
+        return $moy;
+    }
+
+//Calculer la moyenne de classe
+    function dbCalculerMoyenneClasse($pdo,$classe,$matiere,$semestre,$nbrNotes,$nbrEleve){
+        $listeIdEleve = dbGetIdEleveByClasse($pdo,$classe);
+        $sommeClasse = 0;
+        foreach($listeIdEleve as $key =>$values){
+            $sommeClasse += dbCalculerMoyMatiere($pdo,$values['eleve_id'],$matiere,$semestre,$nbrNotes,$classe);
+        }
+        $moyClasse = $sommeClasse / $nbrEleve;
+        return $moyClasse;
+    }
+
+//Calculer moyenne générale élève
+    function dbGetMoyGenerale($pdo,$id_eleve,$semestre,$nbrNotes,$listeMatieres,$classe){
+        $somme = 0;
+        $nbMoy = 0;
+        foreach($listeMatieres as $key =>$values){
+            $somme += dbCalculerMoyMatiere($pdo,$id_eleve,$values['matiere'],$semestre,$nbrNotes,$classe);
+            $nbMoy += 1;
+        }
+        $moyGenerale = $somme / $nbMoy;
+        return $moyGenerale;
+    }
+
+//Rang eleve ds la classe
+    function dbGetRang($pdo,$classe,$matiere,$semestre,$nbrNotes,$moy){
+        $listeIdEleve = dbGetIdEleveByClasse($pdo,$classe);
+        $tabMoy = array();
+        foreach($listeIdEleve as $key =>$values){
+            array_push($tabMoy, dbCalculerMoyMatiere($pdo,$values['eleve_id'],$matiere,$semestre,$nbrNotes,$classe));
+        }
+        rsort($tabMoy);
+        for($i=0; $i<count($tabMoy); $i++){
+            if($tabMoy[$i] == $moy){
+                return $i+1;
+            }
+        }
+    }
+
+//Rang général de l'eleve ds la classe
+    function dbGetRangGeneral($pdo,$id_eleve,$classe,$semestre,$nbrNotes,$moyGenerale,$listeMatieres){
+        $listeIdEleve = dbGetIdEleveByClasse($pdo,$classe);
+        $tabMoy = array();
+        foreach($listeIdEleve as $key =>$values){
+            array_push($tabMoy, dbGetMoyGenerale($pdo,$values['eleve_id'],$semestre,$nbrNotes,$listeMatieres,$classe));
+        }
+        rsort($tabMoy);
+        for($i=0; $i<count($tabMoy); $i++){
+            if($tabMoy[$i] == $moyGenerale){
+                return $i+1;
+            }
+        }
     }
 
 ?>

@@ -28,7 +28,7 @@
                         <a class="nav-link" href="admin_ajouter_ds.php">Ajouter DS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, promo, classe,semestre,  matière</a>
+                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, classe,semestre,  matière</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin_modifier_suppr_compte.php">Modifier / Supprimer un compte</a>
@@ -92,11 +92,11 @@
                     $compteInfosEleve = dbGetCompteInfoEleve($db,$classe);
 
                     echo "<table class='table table-striped'>";
-                    echo "<thead> <tr> <th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Classe</th><th>Promo</th><th>Modifier/Supprimer</th> </tr> </thead>";
+                    echo "<thead> <tr> <th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Classe</th><th>Modifier/Supprimer</th> </tr> </thead>";
                     echo "<tbody>";
                     foreach($compteInfosEleve as $key => $values){
                         echo "<tr> 
-                        <td>".$values['eleve_name']."</td><td>".$values['eleve_surname']."</td><td>".$values['eleve_email']."</td><td>".$values['eleve_phone']."</td><td>".$values['classe']."</td><td>".$values['promo']."</td>
+                        <td>".$values['eleve_name']."</td><td>".$values['eleve_surname']."</td><td>".$values['eleve_email']."</td><td>".$values['eleve_phone']."</td><td>".$values['classe']."</td>
                         <td><input type='radio' name='modifier_suppr' value=".$values['eleve_id']."></td>
                         </tr>";
                     }
@@ -138,6 +138,7 @@
                 foreach($attributs_compte_eleve as $key => $values){
                     echo "<option value=".$key.">".$key."</option>";
                 }
+                echo "<option value='classe'> classe </option>";
                 echo "</select>";
                 echo "<br>";
                 echo "Entrer la nouvelle donnée pour le compte :";
@@ -183,9 +184,7 @@
                 elseif($attribut == 'classe'){
                     dbModifierCompteEleveClasse($db,$new_val,$_SESSION['id_compte_eleve']);
                 }
-                elseif($attribut == 'promo'){
-                    dbModifierCompteElevePromo($db,$new_val,$_SESSION['id_compte_eleve']);
-                }
+            
             }
 
             if(isset($_POST['choix_prof']) && isset($_SESSION['id_compte_prof'])){

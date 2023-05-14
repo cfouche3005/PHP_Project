@@ -28,7 +28,7 @@
                         <a class="nav-link" href="admin_ajouter_ds.php">Ajouter DS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, promo, classe, semestre, matière</a>
+                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, classe, semestre, matière</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin_modifier_suppr_compte.php">Modifier / Supprimer un compte</a>
@@ -80,15 +80,6 @@
                     }
                 ?>
             </select>
-            <select id="case" name="promo">
-                <option selected>Promo :</option>
-                <?php
-                    $promos = dbGetPromo($db);
-                    foreach($promos as $key => $values){
-                        echo "<option value='".$values['promo']."'>".$values['promo']."</option>";
-                    }
-                ?>
-            </select>
     </div>
 
     <div class="box" id="box2">
@@ -131,10 +122,9 @@
                 $mp_crypt = password_hash($mp_n_crypt,PASSWORD_BCRYPT);
                 
                 if($statut == 'eleve'){
-                    if(!empty($_POST['classe'])&&!empty($_POST['promo'])){
+                    if(!empty($_POST['classe'])){
                         $classe = $_POST["classe"];
-                        $promo = $_POST["promo"];
-                        dbInsertCompteEleve($db,$nom,$prenom,$email,$tel,$mp_crypt,$classe,$promo);
+                        dbInsertCompteEleve($db,$nom,$prenom,$email,$tel,$mp_crypt,$classe);
                     }
                     else{
                         echo "Il manque des informations pour inscrire un élève";
@@ -143,7 +133,7 @@
                 elseif($statut == 'prof'){
                     if(!empty($_POST['matiere'])){
                         $matiere = $_POST['matiere'];
-                        $request = 'INSERT INTO prof (prof_id, prof_name, prof_surname, prof_email, prof_phone, prof_password, matiere) VALUES (DEFAULT, :name, :surname, :email, :phone, :password, :matiere)';
+                        /*$request = 'INSERT INTO prof (prof_id, prof_name, prof_surname, prof_email, prof_phone, prof_password, matiere) VALUES (DEFAULT, :name, :surname, :email, :phone, :password, :matiere)';
                         $statement = $db->prepare($request);
                         $statement->bindParam(':name',$nom);
                         $statement->bindParam(':surname',$prenom);
@@ -151,7 +141,7 @@
                         $statement->bindParam(':phone',$tel);
                         $statement->bindParam(':password',$mp_crypt);
                         $statement->bindParam(':matiere',$matiere);
-                        $statement->execute();
+                        $statement->execute();*/
                         dbInsertCompteProf($db,$nom,$prenom,$email,$tel,$mp_crypt,$matiere);                    
                     }
                     else{
