@@ -28,7 +28,7 @@
                         <a class="nav-link" href="admin_ajouter_ds.php">Ajouter DS</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, promo, classe, semestre, matière</a>
+                        <a class="nav-link" href="admin_ajouter_ann_promo_mat.php">Ajouter année-universitaire, classe, semestre, matière</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="admin_modifier_suppr_compte.php">Modifier / Supprimer un compte</a>
@@ -81,14 +81,15 @@
         if(isset($_POST['rechercher'])){
             if(!empty($_POST['classe'])){
                 $classe = $_POST['classe'];
+                $_SESSION['classe'] = $classe;
                 $DsInfo = dbGetDsInfo($db,$classe);
 
                 echo "<table class='table table-striped'>";
-                echo "<thead> <tr> <th>Matière</th><th>Nom DS</th><th>Professeur</th><th>Semestre</th><th>Date</th><th>Heure</th><th>Modifier/Supprimer</th> </tr> </thead>";
+                echo "<thead> <tr> <th>Matière</th><th>Nom DS</th><th>Semestre</th><th>Date</th><th>Heure</th><th>Modifier/Supprimer</th> </tr> </thead>";
                 echo "<tbody>";
                 foreach($DsInfo as $key => $values){
                     echo "<tr> 
-                    <td>".$values['matiere']."</td><td>".$values['name']."</td><td>".$values['prof_name']."</td><td>".$values['semestre']."</td><td>".$values['date']."</td><td>".$values['heure']."</td>
+                    <td>".$values['matiere']."</td><td>".$values['name']."</td><td>".$values['semestre']."</td><td>".$values['date']."</td><td>".$values['heure']."</td>
                     <td><input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>
                     </tr>";
                 }
@@ -112,17 +113,31 @@
             foreach($attributsDs as $key => $values){
                 echo "<option value=".$key.">".$key."</option>";
             }
-            echo "<option value='prof_name'>prof</option>";
             echo "</select>";
+            echo "<br>";
+            echo "<input class='btn btn-secondary' type='submit' name='choix_att' value='Modifier'/>";
+        }
+
+        if(isset($_POST['choix_att'])){
+            $attribut = $_POST['selectAtt'];
+            $_SESSION['attribut'] = $attribut;
             echo "<br>";
             echo "Entrer la nouvelle donnée pour le DS :";
             echo "<br>";
-            echo "<input id='case' type='text' name='new_info'/>";
+            if($attribut == 'date'){
+                echo "<input id='case' type='date' name='new_info'/>";
+            }
+            elseif($attribut == 'heure'){
+                echo "<input id='case' type='time' min='08:00' max='18:00' name='new_info'/>";
+            }
+            else{
+                echo "<input id='case' type='text' name='new_info'/>";
+            }
             echo "<input class='btn btn-secondary' type='submit' name='choix' value='Modifier'/>";
         }
 
         if(isset($_POST['choix']) && isset($_SESSION['id_ds'])){
-            $attribut = $_POST['selectAtt'];
+            $attribut = $_SESSION['attribut'];
             $new_val = $_POST['new_info'];
             if($attribut == 'date'){
                 dbModifierDsDate($db,$new_val,$_SESSION['id_ds']);
@@ -137,10 +152,7 @@
                 dbModifierDsMatiere($db,$new_val,$_SESSION['id_ds']);
             }
             elseif($attribut == 'semestre'){
-                dbModifierDsSemestre($db,$new_val,$_SESSION['id_ds']);
-            }
-            elseif($attribut == 'prof'){
-                dbModifierDsClasse($db,$new_val,$_SESSION['id_ds']);
+                dbModifierDsSemestre($db,$new_val,$_SESSION['id_ds'],$_SESSION['classe']);
             }
             echo "<br>";
             echo "Le DS numéro ".$_SESSION['id_ds']." (id) a été modifié !";
