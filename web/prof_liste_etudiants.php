@@ -109,14 +109,21 @@
                     echo "<td>".$values['eleve_email']."</td>";
                     echo "<td>".$values['classe']."</td>";
                     echo "<td>".$values['note']."</td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."<input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>";
                     echo "</tr>";
                   }
+                  echo "</tbody>";
+                  echo "</table>";
+                  echo "<input class='btn btn-secondary' type='submit' name='modifier' value='Modifier le DS sélectionné'/>";
+
+                  //code la suite du bouton qui renvoie vers la page de modification
                 }
                   
                  
                 ?>
-              </tbody>
-        </table>
               </form>
 </body>
 
