@@ -68,6 +68,26 @@
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    //Recup id_eleve by nom prenom
+    function dbGetIdEleveByNomPrenom($pdo,$nom,$prenom){
+        $request = 'SELECT eleve_id FROM eleve WHERE eleve_name=:eleve_name AND eleve_surname=:eleve_surname';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':eleve_name',$nom);
+        $statement->bindParam(':eleve_surname',$prenom);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    //Recup nom prenom eleve by classe
+    function dbGetNameSurnameEleveByClasse($pdo,$classe){
+        $idClasse = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'SELECT eleve_id, eleve_name, eleve_surname FROM eleve WHERE classe_id=:id_classe ORDER BY eleve_name';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_classe',$idClasse['classe_id']);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
     //Recup toutes les infos élèves by classe
     function dbGetEtudiantByClasse($pdo,$classe, $matiere, $id_semestre){
         $idClasse = dbGetIdClasseByClasse($pdo,$classe);
@@ -432,20 +452,6 @@
         $statement->bindParam(':classe_id',$classe_id['classe_id']);
         $statement->bindParam(':prof_id',$prof_id['prof_id']);
         $statement->execute();
-    }
-
-    //plus utile
-    function dbGetEleveID($pdo,$class){
-        $request = 'SELECT eleve_id from eleve where eleve_class = :eleve_class';
-        $statement = $pdo->prepare($request);
-        $statement->bindParam(':eleve_class',$class);
-        $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
-        $resultlist = array();
-        foreach($result as $key => $values){
-            array_push($resultlist,$values);
-        }
-        return $resultlist;
     }
 
 
@@ -821,6 +827,32 @@
             array_push($listeEleve, $eleve);
         }
         return $listeEleve;
+    }
+
+//Recuperer info DS pour prof 
+    function dbGetDsByClasseSemMat($pdo,$classe,$semestre_id,$matiere){
+        $classe_id = dbGetIdClasseByClasse($pdo,$classe);
+        $statement = $pdo->prepare('SELECT d.ds_id, d.name, d.date FROM ds d WHERE matiere=:matiere AND semestre_id=:semestre_id AND classe_id=:classe_id');
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':semestre_id',$semestre_id);
+        $statement->bindParam(':classe_id',$classe_id['classe_id']);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+
+//Insert info notes
+    function dbInsertNotes($pdo,$note,$coef,$eleve_id,$ds_id){
+        $request = 'INSERT INTO notes (notes_id,note,coeff,eleve_id,ds_id) VALUES (DEFAULT,:note,:coeff,:eleve_id,:ds_id)';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':note',$note);
+        $statement->bindParam(':coeff',$coef);
+        $statement->bindParam(':eleve_id',$eleve_id);
+        $statement->bindParam(':ds_id',$ds_id);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
 
 ?>

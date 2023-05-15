@@ -23,10 +23,14 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                   <li class="nav-item">
-                      <a class="nav-link" href="accueil.html">Déconnexion</a>
+                      <a class="nav-link" href="prof_liste_etudiants.php">Accéder à la liste des étudiants</a>
                   </li>
                   <li class="nav-item">
                       <a class="nav-link" href="prof_ajouter_modifier.php">Ajouter les notes d'un DS ou les modifier</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="accueil.html">Déconnexion</a>
+                  </li>
                 </ul>
                 <span class="navbar-text ms-auto mb-2 mb-lg-0">
                 <?php
@@ -73,7 +77,7 @@
                     echo "</select>";
                     echo "<button type='submit' name='afficher' class='btn btn-primary' style='width:130px'>Afficher</button>";
                   } 
-                ?>                            
+              ?>                            
 </div>
 
 </div>
