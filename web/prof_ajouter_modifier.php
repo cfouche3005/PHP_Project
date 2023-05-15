@@ -103,10 +103,9 @@
         }
 
         if(isset($_POST['ajouter']) && isset($_POST['selectDs'])){
-            $ds_id = $_POST['selectDs'];
+            $_SESSION['ds_id']= $_POST['selectDs'];
             $listeEleves = dbGetNameSurnameEleveByClasse($db,$_SESSION['classe']);
-
-            echo "<br>";
+            //print_r($listeEleves);
             echo "Entrer le coeficient du DS :";
             echo "<input id='case' type='text' name='coef'/>";
 
@@ -114,25 +113,30 @@
             echo "<thead> <tr> <th>Id Eleve</th><th>Nom</th><th>Prénom</th><th>Note</th> </tr> </thead>";
             echo "<tbody>";
             foreach($listeEleves as $key => $values){
+                $getNote = dbGetNoteByDsIdEleveId($db,$_SESSION['ds_id'], $values['eleve_id']);
+                if ($getNote == null){
+                    $getNote['note'] = NULL;
+                }
                 echo "<tr> <td>".$values['eleve_id']."</td><td>".$values['eleve_name']."</td><td>".$values['eleve_surname']."</td>
-                <td><input type='radio' name='selectEleve' value=".$values['eleve_id']."></td> </tr>";
+                <td><input type='text' name='selectEleve[".$values['eleve_id']."]' value=".$getNote['note']."></td> </tr>";
             }
             echo "</tbody>";
             echo "</table>";
-            echo "<input class='btn btn-secondary' type='submit' name='enregistrer' value='Enregistrer les notes'/>";      
+            echo "<input class='btn btn-secondary' type='submit' name='valeurs' value='Rentrer les notes'/>";      
         }
 
-        if(isset($_POST['enregistrer'])){
+        if (isset($_POST['valeurs']) && isset($_POST["selectEleve"]) && isset($_POST['coef'])) {
             $coef = $_POST['coef'];
-            $_SESSION['coef'] = $coef;
-            //Faire formulaire pr enter valeur note
-        }
-
-        if(){
-            $coef = $_SESSION['coef'];
-            //Mettre les bonnes variables  
-            dbInsertNotes($db,$note,$coef,$eleve_id,$ds_id);
-
+            $listeEleves = $_POST["selectEleve"];
+        
+            foreach ($listeEleves as $eleve_id => $note) {
+                if ($note != NULL || $note != "") {
+                    $var = dbInsertNotes($db,$note,$coef,$eleve_id,$_SESSION['ds_id']);
+                    if($var==false){
+                        dbUpdateNotes($db,$note,$coef,$eleve_id,$_SESSION['ds_id']);
+                    }  
+                }
+            }
         }
 
     ?>

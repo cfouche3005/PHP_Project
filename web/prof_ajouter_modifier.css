@@ -17,12 +17,6 @@ body {
     line-height: 1.5em;
 }
 
-#layout {
-    display: grid;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-}
-
 div.mb-3{
     margin-right: 10px;
 }

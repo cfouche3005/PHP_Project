@@ -304,6 +304,15 @@
         return $result;
     }
 
+//Récupérer la note de DS selon l'ID du DS
+    function dbGetNoteDs($pdo,$ds_id){
+        $statement = $pdo->prepare('SELECT note FROM note WHERE ds_id=:ds_id');
+        $statement->bindParam(':ds_id',$ds_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 //Recuperer une ligne de compte eleve
     function dbGetCompteEleve2($pdo){
         $statement = $pdo->prepare('SELECT e.eleve_name, e.eleve_surname, e.eleve_email, e.eleve_phone, c.classe FROM eleve e, classe c WHERE c.classe_id=e.classe_id');
@@ -720,6 +729,16 @@
         return $result;     //attention result tableau ['count']
     }
 
+//Recup note d'un DS
+    function dbGetNoteByDsIdEleveId($pdo,$id_ds,$id_eleve){
+        $statement = $pdo->prepare('SELECT note FROM notes WHERE ds_id=:id_ds AND eleve_id=:id_eleve');
+        $statement->bindParam(':id_ds',$id_ds);
+        $statement->bindParam(':id_eleve',$id_eleve);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 //Recup note coef par eleve matiere semestre
     function dbGetNoteCoefByEleveMatSem($pdo,$id_eleve,$matiere,$semestre,$classe){
         $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
@@ -844,7 +863,30 @@
 
 //Insert info notes
     function dbInsertNotes($pdo,$note,$coef,$eleve_id,$ds_id){
-        $request = 'INSERT INTO notes (notes_id,note,coeff,eleve_id,ds_id) VALUES (DEFAULT,:note,:coeff,:eleve_id,:ds_id)';
+        $query = 'SELECT count(*) FROM notes WHERE eleve_id =:eleve AND ds_id = :ds';
+        $statement = $pdo->prepare($query);
+        $statement->bindParam(':eleve',$eleve_id);
+        $statement->bindParam(':ds',$ds_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if($result['count']==0){
+            $request = 'INSERT INTO notes (notes_id,note,coeff,eleve_id,ds_id) VALUES (DEFAULT,:note,:coeff,:eleve_id,:ds_id)';
+            $statement = $pdo->prepare($request);
+            $statement->bindParam(':note',$note);
+            $statement->bindParam(':coeff',$coef);
+            $statement->bindParam(':eleve_id',$eleve_id);
+            $statement->bindParam(':ds_id',$ds_id);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+//Modify notes
+    function dbUpdateNotes($pdo,$note,$coef,$eleve_id,$ds_id){
+        $request = 'UPDATE notes SET note=:note, coeff=:coeff WHERE eleve_id=:eleve_id AND ds_id=:ds_id';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':note',$note);
         $statement->bindParam(':coeff',$coef);
