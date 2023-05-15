@@ -71,10 +71,11 @@
     //Recup toutes les infos élèves by classe
     function dbGetEtudiantByClasse($pdo,$classe, $matiere, $id_semestre){
         $idClasse = dbGetIdClasseByClasse($pdo,$classe);
-        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note, n.ds_id, c.classe FROM eleve e 
+        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note, n.ds_id, c.classe, a.appreciation FROM eleve e 
                     JOIN classe c ON e.classe_id = c.classe_id 
                     JOIN notes n ON e.eleve_id = n.eleve_id 
                     JOIN ds d ON n.ds_id = d.ds_id
+                    JOIN appreciation a ON a.matiere = d.matiere AND a.eleve_id = e.eleve_id
                     WHERE c.classe_id = :id_classe AND e.eleve_id = n.eleve_id AND n.ds_id = d.ds_id AND d.matiere = :matiere AND d.semestre_id = :id_semestre ORDER BY e.eleve_name ASC;';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':id_classe',$idClasse['classe_id']);

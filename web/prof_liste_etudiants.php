@@ -32,6 +32,7 @@
                 <?php
                       session_start();
                       $id_prof = $_SESSION['id_prof'];
+                      $id_eleve = $_SESSION['id_eleve'];
                       $prof_infos = dbGetNameSurnameProfById($db,$id_prof);
                       $prof_matiere = dbGetMatiereByProfId($db,$id_prof);
                       $_SESSION['prof_matiere'] = $prof_matiere['matiere'];
@@ -97,23 +98,38 @@
                 if (isset($_POST['afficher']) && isset($_SESSION['classe']) && isset($_POST['semestre'])){
                   $classe = $_SESSION['classe'];
                   $matiere = $_SESSION['prof_matiere'];
+                  $semestre = $_POST['semestre'];
                   $annee_uni = dbGetAnneUniByClasse($db,$classe);
                   $id_semestre = dbGetIdSemestreBySemetre($db,$_POST['semestre'], $annee_uni['annee_uni']);
-                  //print_r($id_semestre);
-                  $etudiants = dbGetEtudiantByClasse($db,$classe, $matiere, $id_semestre['semestre_id']);
-                  foreach($etudiants as $key => $values){
-                    echo "<tr>";
-                    echo "<td>".$values['eleve_id']."</td>";
-                    echo "<td>".$values['eleve_name']."</td>";
-                    echo "<td>".$values['eleve_surname']."</td>";
-                    echo "<td>".$values['eleve_email']."</td>";
-                    echo "<td>".$values['classe']."</td>";
-                    echo "<td>".$values['note']."</td>";
-                    echo "<td>"."à faire"."</td>";
-                    echo "<td>"."à faire"."</td>";
-                    echo "<td>"."à faire"."</td>";
-                    echo "<td>"."<input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>";
-                    echo "</tr>";
+                  $listeMatieres = dbGetMatiereByClasseSemestre($db,$classe,$id_semestre['semestre_id']);
+                  $nbrNotesTotal = 0;
+                  foreach($listeMatieres as $key => $values){
+                    $nbrNotes = dbCountNoteByEleveMatSem($db,$id_eleve['eleve_id'],$values['matiere'],$semestre,$classe);
+                    $nbrNotesTotal += $nbrNotes['count'];
+                  }
+                  if($nbrNotesTotal != 0){
+
+                    //print_r($rangGeneral);
+
+                    $etudiants = dbGetEtudiantByClasse($db,$classe, $matiere, $id_semestre['semestre_id']);
+
+                    foreach($etudiants as $key => $values){
+                      $moy = dbCalculerMoyMatiere($db,$values['eleve_id'],$matiere,$semestre,$nbrNotes,$classe);
+                      $nbrEleves = dbCountEleveByClasse($db, $classe);
+                      $rangGeneral = dbGetRang($db,$classe,$matiere,$semestre,$nbrNotes,$moy);
+                      echo "<tr>";
+                      echo "<td>".$values['eleve_id']."</td>";
+                      echo "<td>".$values['eleve_name']."</td>";
+                      echo "<td>".$values['eleve_surname']."</td>";
+                      echo "<td>".$values['eleve_email']."</td>";
+                      echo "<td>".$values['classe']."</td>";
+                      echo "<td>".$values['note']."</td>";
+                      echo "<td>".$values['appreciation']."</td>";
+                      echo "<td>".$rangGeneral."/".$nbrEleves['count']."</td>";
+                      echo "<td>".round($moy, 2)."</td>";
+                      echo "<td>"."<input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>";
+                      echo "</tr>";
+                    }
                   }
                   echo "</tbody>";
                   echo "</table>";
