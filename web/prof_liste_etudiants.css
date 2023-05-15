@@ -11,9 +11,10 @@ h2{
 }
 
 #case{
-    width: 400px;
-    height: 30px;
-    margin-bottom: 20px;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 2;
+    grid-column-end: 3;
 }
 
 body {

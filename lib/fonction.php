@@ -69,11 +69,17 @@
         return $result;
     }
     //Recup toutes les infos élèves by classe
-    function dbGetEtudiantByClasse($pdo,$classe){
+    function dbGetEtudiantByClasse($pdo,$classe, $matiere, $id_semestre){
         $idClasse = dbGetIdClasseByClasse($pdo,$classe);
-        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note FROM eleve e JOIN classe c ON e.classe_id = c.classe_id JOIN notes n ON e.eleve_id = n.eleve_id WHERE c.classe_id=:id_classe AND e.eleve_id = n.eleve_id ORDER BY e.eleve_name ASC';
+        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note, n.ds_id, c.classe FROM eleve e 
+                    JOIN classe c ON e.classe_id = c.classe_id 
+                    JOIN notes n ON e.eleve_id = n.eleve_id 
+                    JOIN ds d ON n.ds_id = d.ds_id
+                    WHERE c.classe_id = :id_classe AND e.eleve_id = n.eleve_id AND n.ds_id = d.ds_id AND d.matiere = :matiere AND d.semestre_id = :id_semestre ORDER BY e.eleve_name ASC;';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':id_classe',$idClasse['classe_id']);
+        $statement->bindParam(':matiere',$matiere);
+        $statement->bindParam(':id_semestre',$id_semestre);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -216,6 +222,13 @@
     function dbGetSemestre($pdo){
         $semestres = $pdo->query('SELECT DISTINCT semestre from semestre ORDER BY semestre');
         $result = $semestres->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+    function dbGetSemestreByAnneUni($pdo,$annee_uni){
+        $statement = $pdo->prepare('SELECT DISTINCT semestre FROM semestre WHERE annee_uni=:annee_uni ORDER BY semestre');
+        $statement->bindParam(':annee_uni',$annee_uni);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
     function dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni){
@@ -647,6 +660,14 @@
         $statement->bindParam(':semestre_id',$semestre_id);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    function dbGetMatiereByProfId($pdo, $id_prof){
+        $statement = $pdo->prepare('SELECT matiere FROM prof WHERE prof_id=:id_prof');
+        $statement->bindParam(':id_prof',$id_prof['prof_id']);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
