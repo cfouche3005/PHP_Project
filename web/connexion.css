@@ -97,3 +97,23 @@ footer{
 #navbarNav{
     background-color: #D9D9D9;
 }
+
+#box1c p{
+    padding-top: 80px;
+}
+
+#box2c p{
+    padding-top: 80px;
+}
+
+#box1c{
+    padding-left: 250px;
+}
+
+#box2c{
+    padding-right: 250px;
+    grid-row-start: 2;
+    grid-row-end: 3;
+    grid-column-start: 3;
+    grid-column-end: 4;
+}

@@ -68,6 +68,16 @@
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+    //Recup toutes les infos élèves by classe
+    function dbGetEtudiantByClasse($pdo,$classe){
+        $idClasse = dbGetIdClasseByClasse($pdo,$classe);
+        $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note FROM eleve e JOIN classe c ON e.classe_id = c.classe_id JOIN notes n ON e.eleve_id = n.eleve_id WHERE c.classe_id=:id_classe AND e.eleve_id = n.eleve_id ORDER BY e.eleve_name ASC';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':id_classe',$idClasse['classe_id']);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 
 //Récupération prof
@@ -772,6 +782,23 @@
                 return $i+1;
             }
         }
+    }
+
+//Récupérer toutes les infos des élèves par matière
+    function dbGetList($pdo, $classe, $matiere, $semestre){
+        $listeIdEleve = dbGetIdEleveByClasse($pdo,$classe);
+        $listeEleve = array();
+        foreach($listeIdEleve as $key =>$values){
+            $eleve = array();
+            $eleve['eleve_id'] = $values['eleve_id'];
+            $eleve['nom'] = dbGetNomEleveById($pdo,$values['eleve_id']);
+            $eleve['prenom'] = dbGetPrenomEleveById($pdo,$values['eleve_id']);
+            $eleve['mail'] = dbGetMailEleveById($pdo,$values['eleve_id']);
+            $eleve['moyenne'] = dbCalculerMoyMatiere($pdo,$values['eleve_id'],$matiere,$semestre,$nbrNotes,$classe);
+            $eleve['rang'] = dbGetRang($pdo,$classe,$matiere,$semestre,$nbrNotes,$eleve['moyenne']);
+            array_push($listeEleve, $eleve);
+        }
+        return $listeEleve;
     }
 
 ?>
