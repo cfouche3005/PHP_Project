@@ -24,7 +24,7 @@
                     </li>
                 </ul>
                 <span class="navbar-text">
-                    Connecté sous :
+                    <p>Connecté sous : </p>
                 </span>
                 <span class="navbar-text">
                     <?php
@@ -33,7 +33,7 @@
                         $eleve_infos = dbGetNameSurnameEleveById($db,$id_eleve);
                         $eleve_nom = $eleve_infos['eleve_name'];
                         echo $eleve_nom;
-                        echo "<br>";
+                        echo "\n";
                         $eleve_prenom = $eleve_infos['eleve_surname'];
                         echo $eleve_prenom;
                     ?>
@@ -63,7 +63,8 @@
                 $classe = dbGetClasseEleveById($db,$id_eleve['eleve_id']);
                 $annee_uni = dbGetAnneUniByClasse($db,$classe['classe']);
                 $semestre_id = dbGetIdSemestreBySemetre($db,$semestre,$annee_uni['annee_uni']);
-                $listeMatieres = dbGetMatiereByClasseSemestre($db,$classe['classe'],$semestre_id['semestre_id']);
+                $listeMatieres = dbGetMatiereByClasseSemestre($db,$classe['classe'],$semestre_id);
+                
                 $nbrNotesTotal = 0;
                 foreach($listeMatieres as $key => $values){
                     $nbrNotes = dbCountNoteByEleveMatSem($db,$id_eleve['eleve_id'],$values['matiere'],$semestre,$classe['classe']);
