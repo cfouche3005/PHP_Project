@@ -68,7 +68,7 @@
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-
+    //Recup toutes les infos élèves by classe
     function dbGetEtudiantByClasse($pdo,$classe){
         $idClasse = dbGetIdClasseByClasse($pdo,$classe);
         $request = 'SELECT e.eleve_id, e.eleve_name, e.eleve_surname, e.eleve_email, n.note FROM eleve e JOIN classe c ON e.classe_id = c.classe_id JOIN notes n ON e.eleve_id = n.eleve_id WHERE c.classe_id=:id_classe AND e.eleve_id = n.eleve_id ORDER BY e.eleve_name ASC';
