@@ -103,8 +103,6 @@
             <input id="case" type="time" min="08:00" max="18:00" name="heure"/>
             <br>            
             <input class="btn btn-secondary" type="submit" value="Enregistrer le DS"/>
-            <br>
-
         </form>
     </div>
 
