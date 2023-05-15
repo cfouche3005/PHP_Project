@@ -663,7 +663,7 @@
         $classe_id = dbGetIdClasseByClasse($pdo,$classe);
         $statement = $pdo->prepare('SELECT DISTINCT matiere FROM ds WHERE classe_id=:classe_id AND semestre_id=:semestre_id ORDER BY matiere');
         $statement->bindParam(':classe_id',$classe_id['classe_id']);
-        $statement->bindParam(':semestre_id',$semestre_id);
+        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -682,7 +682,7 @@
         $classe_id = dbGetIdClasseByClasse($pdo,$classe);
         $annee_uni = dbGetAnneUniByClasse($pdo,$classe);
         $semestre_id = dbGetIdSemestreBySemetre($pdo,$semestre,$annee_uni['annee_uni']);
-        $request = 'SELECT ds_id FROM ds WHERE classe_id=:classe_id AND semestre_id=:semestre_id AND matiere=:matiere ORDER BY date';
+        $request = 'SELECT d.ds_id FROM ds d, notes n WHERE d.ds_id=n.ds_id AND d.classe_id=:classe_id AND d.semestre_id=:semestre_id AND d.matiere=:matiere AND n.notes_id IS NOT NULL GROUP BY d.ds_id ORDER BY d.date';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':classe_id',$classe_id['classe_id']);
         $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
