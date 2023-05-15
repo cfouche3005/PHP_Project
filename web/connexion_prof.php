@@ -57,6 +57,7 @@
     </div>
 
     <?php
+    session_start();
         //Récupération connexion
         if(!empty($_POST['mail']) && !empty($_POST['mp'])){
 
@@ -64,9 +65,11 @@
             $mp_n_crypt = ($_POST["mp"]);
             
             if(dbCheckMailMpProf($db,$mail,$mp_n_crypt)){
+                $id_prof = dbGetIdProfByEmail($db,$mail);
+                $_SESSION['id_prof'] = $id_prof;
                 //Envoie vers la page prof
-                //echo '<meta http-equiv="refresh" content="0;url=?">';
-                echo 'Connexion réussie';
+                echo '<meta http-equiv="refresh" content="0;url=prof_choix.html">';
+                //echo 'Connexion réussie';
             }
             else{
                 echo 'Erreur de connexion';
