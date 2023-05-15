@@ -33,6 +33,8 @@
                       session_start();
                       $id_prof = $_SESSION['id_prof'];
                       $prof_infos = dbGetNameSurnameProfById($db,$id_prof);
+                      $prof_matiere = dbGetMatiereByProfId($db,$id_prof);
+                      $_SESSION['prof_matiere'] = $prof_matiere['matiere'];
                       $prof_nom = $prof_infos['prof_name'];
                       echo $prof_nom;
                       echo " ";
@@ -56,9 +58,22 @@
                     }
                 ?>
             </select>
-          </form>                
+            <button type="submit" name="valider" class="btn btn-primary" style="width:130px">Valider</button>
+              <?php
+                if(isset($_POST['valider']) && isset($_POST['classe'])) { 
+                    $_SESSION['classe'] = $_POST['classe'];
+                    echo"<select id='case' name='semestre'>";
+                    echo"<option selected>Semestre :</option>";
+                    $annee_uni = dbGetAnneUniByClasse($db,$_POST['classe']);
+                    $semestres = dbGetSemestreByAnneUni($db,$annee_uni['annee_uni']);
+                    foreach($semestres as $key => $values){
+                        echo "<option value=".$values['semestre'].">".$values['semestre']."</option>";
+                    }
+                    echo "</select>";
+                    echo "<button type='submit' name='afficher' class='btn btn-primary' style='width:130px'>Afficher</button>";
+                  } 
+                ?>                            
 </div>
-  <button type="submit" name="submit" class="btn btn-primary" style="width:130px">Valider</button>
 
 </div>
 
@@ -79,10 +94,13 @@
               </thead>
               <tbody>
                 <?php
-                if (isset($_POST['submit']) /*&& isset($_POST['classe'])*/) {
-                  $classe = $_POST['classe'];
-                  $etudiants = dbGetEtudiantByClasse($db,$classe);
-                  print_r($etudiants);
+                if (isset($_POST['afficher']) && isset($_SESSION['classe']) && isset($_POST['semestre'])){
+                  $classe = $_SESSION['classe'];
+                  $matiere = $_SESSION['prof_matiere'];
+                  $annee_uni = dbGetAnneUniByClasse($db,$classe);
+                  $id_semestre = dbGetIdSemestreBySemetre($db,$_POST['semestre'], $annee_uni['annee_uni']);
+                  //print_r($id_semestre);
+                  $etudiants = dbGetEtudiantByClasse($db,$classe, $matiere, $id_semestre['semestre_id']);
                   foreach($etudiants as $key => $values){
                     echo "<tr>";
                     echo "<td>".$values['eleve_id']."</td>";
@@ -91,14 +109,22 @@
                     echo "<td>".$values['eleve_email']."</td>";
                     echo "<td>".$values['classe']."</td>";
                     echo "<td>".$values['note']."</td>";
-                    //echo "<td><a href='prof_modifier.php?id=".$values['id']."'>Modifier</a></td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."à faire"."</td>";
+                    echo "<td>"."<input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>";
                     echo "</tr>";
                   }
+                  echo "</tbody>";
+                  echo "</table>";
+                  echo "<input class='btn btn-secondary' type='submit' name='modifier' value='Modifier le DS sélectionné'/>";
+
+                  //code la suite du bouton qui renvoie vers la page de modification
                 }
                   
                  
                 ?>
-              </tbody>
+              </form>
 </body>
 
 </html>
