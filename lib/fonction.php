@@ -289,10 +289,11 @@
         return $result;
     }
 
-    function dbGetAppreciationByEleveIdDsId($pdo,$eleve_id){
-        $request = 'SELECT DISTINCT appreciation FROM appreciation WHERE eleve_id=:eleve_id';
+    function dbGetAppreciationByEleveIdDsIdAndMatiere($pdo,$eleve_id, $matiere){
+        $request = 'SELECT DISTINCT appreciation FROM appreciation a JOIN matiere m ON a.matiere=:matiere WHERE a.eleve_id=:eleve_id';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':eleve_id',$eleve_id);
+        $statement->bindParam(':matiere',$matiere);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -907,10 +908,11 @@
     }
 
 //Insert info appreciation 
-    function dbInsertAppreciation($pdo,$appreciation,$eleve_id){
-        $query = 'SELECT count(*) FROM appreciation WHERE eleve_id =:eleve';
+    function dbInsertAppreciation($pdo,$appreciation,$eleve_id, $matiere){
+        $query = 'SELECT count(*) FROM appreciation a JOIN matiere m ON a.matiere = :matiere WHERE a.eleve_id =:eleve';
         $statement = $pdo->prepare($query);
         $statement->bindParam(':eleve',$eleve_id);
+        $statement->bindParam(':matiere',$matiere);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         if($result['count']==0){
@@ -927,11 +929,12 @@
     }
 
 //Modify appreciation
-    function dbUpdateAppreciation($pdo,$appreciation,$eleve_id){
-        $request = 'UPDATE appreciation SET appreciation=:appreciation WHERE eleve_id=:eleve_id';
+    function dbUpdateAppreciation($pdo,$appreciation,$eleve_id, $matiere){
+        $request = 'UPDATE appreciation SET appreciation=:appreciation WHERE eleve_id=:eleve_id AND matiere=:matiere';
         $statement = $pdo->prepare($request);
         $statement->bindParam(':appreciation',$appreciation);
         $statement->bindParam(':eleve_id',$eleve_id);
+        $statement->bindParam(':matiere',$matiere);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;

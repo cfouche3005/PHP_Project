@@ -84,6 +84,7 @@
 
         if(isset($_POST['rechercher_sem']) && isset($_POST['semestre'])){
             $semestre = $_POST['semestre'];
+            $_SESSION['semestre'] = $semestre;
             $semestre_id = dbGetIdSemestreBySemetre($db,$semestre,$_SESSION['annee_uni']);
             $prof_matiere = $_SESSION['prof_matiere'];
             $classe = $_SESSION['classe'];
@@ -105,6 +106,7 @@
             echo "<input class='btn btn-secondary' type='submit' name='ajouter' value='Ajouter une appréciation'/>";      
         }
 
+
         if(isset($_POST['ajouter']) && isset($_POST['selectDs'])){
             $_SESSION['ds_id']= $_POST['selectDs'];
             $listeEleves = dbGetNameSurnameEleveByClasse($db,$_SESSION['classe']);
@@ -114,13 +116,14 @@
             echo "<thead> <tr> <th>Id Eleve</th><th>Nom</th><th>Prénom</th><th>Appréciation</th> </tr> </thead>";
             echo "<tbody>";
             foreach($listeEleves as $key => $values){
-                $getAppreciation = dbGetAppreciationByEleveIdDsId($db,$values['eleve_id']);
+                $getAppreciation = dbGetAppreciationByEleveIdDsIdAndMatiere($db, $values['eleve_id'], $prof_matiere['matiere']);
                 if ($getAppreciation == null){
                     $getAppreciation['appreciation'] = NULL;
                 }
                 echo "<tr> <td>".$values['eleve_id']."</td><td>".$values['eleve_name']."</td><td>".$values['eleve_surname']."</td>
                 <td><input type='text' name='selectEleve[".$values['eleve_id']."]' value=".$getAppreciation['appreciation']."></td> </tr>";
             }
+            print_r($getAppreciation);
             echo "</tbody>";
             echo "</table>";
             echo "<input class='btn btn-secondary' type='submit' name='valeurs' value='Rentrer les appréciations'/>";      
@@ -131,9 +134,9 @@
         
             foreach ($listeEleves as $eleve_id => $appreciation) {
                 if ($appreciation != NULL || $appreciation != "") {
-                    $var = dbInsertAppreciation($db,$appreciation,$eleve_id,$_SESSION['ds_id']);
+                    $var = dbInsertAppreciation($db,$appreciation,$eleve_id, $prof_matiere['matiere']);
                     if($var==false){
-                        dbUpdateAppreciation($db,$appreciation,$eleve_id,$_SESSION['ds_id']);
+                        dbUpdateAppreciation($db,$appreciation,$eleve_id, $prof_matiere['matiere']);
                     }  
                 }
             }
