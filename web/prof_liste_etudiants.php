@@ -29,6 +29,9 @@
                       <a class="nav-link" href="prof_ajouter_modifier.php">Ajouter les notes d'un DS ou les modifier</a>
                   </li>
                   <li class="nav-item">
+                      <a class="nav-link" href="prof_ajouter_modifier_appreciation.php">Modifier l'appréciation du semestre</a>
+                  </li>
+                  <li class="nav-item">
                       <a class="nav-link" href="accueil.html">Déconnexion</a>
                   </li>
                 </ul>
@@ -94,7 +97,6 @@
                   <th scope="col">Appréciation</th>
                   <th scope="col">Classement</th>
                   <th scope="col">Moyenne</th>
-                  <th scope="col">Modifier</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,13 +133,11 @@
                       echo "<td>".$values['appreciation']."</td>";
                       echo "<td>".$rangGeneral."/".$nbrEleves['count']."</td>";
                       echo "<td>".round($moy, 2)."</td>";
-                      echo "<td>"."<input type='radio' name='modifier_suppr' value=".$values['ds_id']."></td>";
                       echo "</tr>";
                     }
                   }
                   echo "</tbody>";
                   echo "</table>";
-                  echo "<input class='btn btn-secondary' type='submit' name='modifier' value='Modifier le DS sélectionné'/>";
 
                   //code la suite du bouton qui renvoie vers la page de modification
                 }

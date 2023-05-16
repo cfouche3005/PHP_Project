@@ -84,6 +84,7 @@
 
         if(isset($_POST['rechercher_sem']) && isset($_POST['semestre'])){
             $semestre = $_POST['semestre'];
+            $_SESSION['semestre'] = $semestre;
             $semestre_id = dbGetIdSemestreBySemetre($db,$semestre,$_SESSION['annee_uni']);
             $prof_matiere = $_SESSION['prof_matiere'];
             $classe = $_SESSION['classe'];
@@ -102,41 +103,40 @@
             }
             echo "</tbody>";
             echo "</table>";
-            echo "<input class='btn btn-secondary' type='submit' name='ajouter' value='Ajouter une Note'/>";      
+            echo "<input class='btn btn-secondary' type='submit' name='ajouter' value='Ajouter une appréciation'/>";      
         }
+
 
         if(isset($_POST['ajouter']) && isset($_POST['selectDs'])){
             $_SESSION['ds_id']= $_POST['selectDs'];
             $listeEleves = dbGetNameSurnameEleveByClasse($db,$_SESSION['classe']);
             //print_r($listeEleves);
-            echo "Entrer le coeficient du DS :";
-            echo "<input id='case' type='text' name='coef'/>";
 
             echo "<table class='table table-striped'>";
-            echo "<thead> <tr> <th>Id Eleve</th><th>Nom</th><th>Prénom</th><th>Note</th> </tr> </thead>";
+            echo "<thead> <tr> <th>Id Eleve</th><th>Nom</th><th>Prénom</th><th>Appréciation</th> </tr> </thead>";
             echo "<tbody>";
             foreach($listeEleves as $key => $values){
-                $getNote = dbGetNoteByDsIdEleveId($db,$_SESSION['ds_id'], $values['eleve_id']);
-                if ($getNote == null){
-                    $getNote['note'] = NULL;
+                $getAppreciation = dbGetAppreciationByEleveIdDsIdAndMatiere($db, $values['eleve_id'], $prof_matiere['matiere']);
+                if ($getAppreciation == null){
+                    $getAppreciation['appreciation'] = NULL;
                 }
                 echo "<tr> <td>".$values['eleve_id']."</td><td>".$values['eleve_name']."</td><td>".$values['eleve_surname']."</td>
-                <td><input type='text' name='selectEleve[".$values['eleve_id']."]' value=".$getNote['note']."></td> </tr>";
+                <td><input type='text' name='selectEleve[".$values['eleve_id']."]' value=".$getAppreciation['appreciation']."></td> </tr>";
             }
+            print_r($getAppreciation);
             echo "</tbody>";
             echo "</table>";
-            echo "<input class='btn btn-secondary' type='submit' name='valeurs' value='Rentrer les notes'/>";      
+            echo "<input class='btn btn-secondary' type='submit' name='valeurs' value='Rentrer les appréciations'/>";      
         }
 
-        if (isset($_POST['valeurs']) && isset($_POST["selectEleve"]) && isset($_POST['coef'])) {
-            $coef = $_POST['coef'];
+        if (isset($_POST['valeurs']) && isset($_POST["selectEleve"])){
             $listeEleves = $_POST["selectEleve"];
         
-            foreach ($listeEleves as $eleve_id => $note) {
-                if ($note != NULL || $note != "") {
-                    $var = dbInsertNotes($db,$note,$coef,$eleve_id,$_SESSION['ds_id']);
+            foreach ($listeEleves as $eleve_id => $appreciation) {
+                if ($appreciation != NULL || $appreciation != "") {
+                    $var = dbInsertAppreciation($db,$appreciation,$eleve_id, $prof_matiere['matiere']);
                     if($var==false){
-                        dbUpdateNotes($db,$note,$coef,$eleve_id,$_SESSION['ds_id']);
+                        dbUpdateAppreciation($db,$appreciation,$eleve_id, $prof_matiere['matiere']);
                     }  
                 }
             }

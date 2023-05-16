@@ -107,13 +107,12 @@ footer{
 }
 
 #box1c{
-    padding-left: 250px;
+    padding-left: 50px;
 }
 
-#box2c{
-    padding-right: 250px;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    grid-column-start: 3;
-    grid-column-end: 4;
+#box2c.box{
+}
+
+#box3c.box{
+    padding-top: 83px;
 }

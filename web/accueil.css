@@ -16,6 +16,10 @@ h2{
     margin-bottom: 20px;
 }
 
+nav.navbar.navbar-expand-lg.navbar-light.bg-light{
+    padding: 0px;
+}
+
 body {
     font-family: Georgia, serif;
     line-height: 1.5em;
@@ -29,13 +33,6 @@ body {
     grid-template-columns: 50% 50%;
 }
 
-header{
-    grid-row-start: 1;
-    grid-row-end: 2;
-    grid-column-start: 1;
-    grid-column-end: 3;
-}
-
 #navbarNav{
     background-color: #D9D9D9;
 }
@@ -46,28 +43,13 @@ header{
     margin-left: 5%;
 }
 
-#box1{
-    grid-row-start: 2;
-    grid-row-end: 3;
-    grid-column-start: 1;
-    grid-column-end: 2;
-}
-
-#box2{
-    grid-row-start: 2;
-    grid-row-end: 3;
-    grid-column-start: 2;
-    grid-column-end: 3;
-}
-
 footer{
-    grid-row-start: 3;
-    grid-row-end: 4;
-    grid-column-start: 1;
-    grid-column-end: 3;
     background: #D9D9D9;
     font-size: small;
     line-height: 50%;
+    bottom: 0;
+    position:absolute;
+    width: 100%;
 }
 
 
