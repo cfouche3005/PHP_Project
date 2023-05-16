@@ -289,6 +289,15 @@
         return $result;
     }
 
+    function dbGetAppreciationByEleveIdDsId($pdo,$eleve_id){
+        $request = 'SELECT DISTINCT appreciation FROM appreciation WHERE eleve_id=:eleve_id';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':eleve_id',$eleve_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 //Récupération nom prof
     function dbGetNomProf($pdo){
         $profs = $pdo->query('SELECT prof_name from prof');
@@ -673,7 +682,7 @@
         $classe_id = dbGetIdClasseByClasse($pdo,$classe);
         $statement = $pdo->prepare('SELECT DISTINCT matiere FROM ds WHERE classe_id=:classe_id AND semestre_id=:semestre_id ORDER BY matiere');
         $statement->bindParam(':classe_id',$classe_id['classe_id']);
-        $statement->bindParam(':semestre_id',$semestre_id['semestre_id']);
+        $statement->bindParam(':semestre_id',$semestre_id);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
@@ -892,6 +901,37 @@
         $statement->bindParam(':coeff',$coef);
         $statement->bindParam(':eleve_id',$eleve_id);
         $statement->bindParam(':ds_id',$ds_id);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+//Insert info appreciation 
+    function dbInsertAppreciation($pdo,$appreciation,$eleve_id){
+        $query = 'SELECT count(*) FROM appreciation WHERE eleve_id =:eleve';
+        $statement = $pdo->prepare($query);
+        $statement->bindParam(':eleve',$eleve_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        if($result['count']==0){
+            $request = 'INSERT INTO appreciation (appreciation_id,appreciation,eleve_id) VALUES (DEFAULT,:appreciation,:eleve_id)';
+            $statement = $pdo->prepare($request);
+            $statement->bindParam(':appreciation',$appreciation);
+            $statement->bindParam(':eleve_id',$eleve_id);
+            $statement->execute();
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+//Modify appreciation
+    function dbUpdateAppreciation($pdo,$appreciation,$eleve_id){
+        $request = 'UPDATE appreciation SET appreciation=:appreciation WHERE eleve_id=:eleve_id';
+        $statement = $pdo->prepare($request);
+        $statement->bindParam(':appreciation',$appreciation);
+        $statement->bindParam(':eleve_id',$eleve_id);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;

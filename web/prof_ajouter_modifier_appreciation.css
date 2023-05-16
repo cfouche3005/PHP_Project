@@ -1,0 +1,60 @@
+html {
+    box-sizing: border-box;
+}
+
+p, button,a {
+    margin:10px;  
+}
+
+#case{
+    width: 400px;
+    height: 30px;
+    margin-bottom: 20px;
+}
+
+body {
+    font-family: Georgia, serif;
+    line-height: 1.5em;
+}
+
+div.mb-3{
+    margin-right: 10px;
+}
+
+div.dropdown{
+    padding-left: 20px;
+}
+
+form{
+    display: inline-block;
+}
+
+input#inputCoeff.form-control{
+    width: 400px;
+    height: 30px;
+    margin-bottom: 20px;
+}
+
+button#dropdownMenuButton2.btn.btn-secondary.dropdown-toggle{
+    margin-left: 50px;
+}
+
+nav.navbar.navbar-expand-lg.navbar-light.bg-light{
+    padding: 0px;
+}
+
+header{
+    grid-row-start: 1;
+    grid-row-end: 2;
+    grid-column-start: 1;
+    grid-column-end: 3;
+}
+
+#navbarNav{
+    background-color: #D9D9D9;
+}
+
+div#box1{
+    padding-top: 30px;
+    padding-left: 20px;
+}
